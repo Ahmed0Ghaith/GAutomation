@@ -23,25 +23,25 @@ public class BrowserFingerprintManager
         "Win32", "MacIntel", "Linux x86_64", "Linux i686"
     };
 
-    private static readonly string[] _languages = {
-        "en-US,en;q=0.9",
-        "en-GB,en;q=0.9",
-        "en-CA,en;q=0.9",
-        "en-AU,en;q=0.9",
-        "en-US,en;q=0.9,es;q=0.8",
-        "en-GB,en;q=0.9,fr;q=0.8"
-    };
+    //private static readonly string[] _languages = {
+    //    "en-US,en;q=0.9",
+    //    "en-GB,en;q=0.9",
+    //    "en-CA,en;q=0.9",
+    //    "en-AU,en;q=0.9",
+    //    "en-US,en;q=0.9,es;q=0.8",
+    //    "en-GB,en;q=0.9,fr;q=0.8"
+    //};
 
-    private static readonly string[] _timezones = {
-        "America/New_York",
-        "America/Los_Angeles",
-        "America/Chicago",
-        "Europe/London",
-        "Europe/Berlin",
-        "Europe/Paris",
-        "Australia/Sydney",
-        "America/Toronto"
-    };
+    //private static readonly string[] _timezones = {
+    //    "America/New_York",
+    //    "America/Los_Angeles",
+    //    "America/Chicago",
+    //    "Europe/London",
+    //    "Europe/Berlin",
+    //    "Europe/Paris",
+    //    "Australia/Sydney",
+    //    "America/Toronto"
+    //};
 
     private static readonly ViewportSize[] _viewportSizes = {
         new ViewportSize { Width = 1920, Height = 1080 },
@@ -60,8 +60,8 @@ public class BrowserFingerprintManager
     {
         public string UserAgent { get; set; }
         public string Platform { get; set; }
-        public string Language { get; set; }
-        public string Timezone { get; set; }
+        //public string Language { get; set; }
+        //public string Timezone { get; set; }
         public ViewportSize ViewportSize { get; set; }
         public string ScreenResolution { get; set; }
         public int ColorDepth { get; set; }
@@ -82,8 +82,8 @@ public class BrowserFingerprintManager
         {
             UserAgent = userAgent,
             Platform = _platforms[_random.Next(_platforms.Length)],
-            Language = _languages[_random.Next(_languages.Length)],
-            Timezone = _timezones[_random.Next(_timezones.Length)],
+         //   Language = _languages[_random.Next(_languages.Length)],
+         //   Timezone = _timezones[_random.Next(_timezones.Length)],
             ViewportSize = viewport,
             ScreenResolution = screenRes,
             ColorDepth = _random.Next(2) == 0 ? 24 : 32,
@@ -187,13 +187,7 @@ public class BrowserFingerprintManager
                 get: () => '{profile.Platform}'
             }});
             
-            Object.defineProperty(navigator, 'language', {{
-                get: () => '{profile.Language.Split(',')[0]}'
-            }});
-            
-            Object.defineProperty(navigator, 'languages', {{
-                get: () => ['{profile.Language.Split(',')[0]}', 'en']
-            }});
+          
             
             Object.defineProperty(navigator, 'cookieEnabled', {{
                 get: () => {profile.CookiesEnabled.ToString().ToLower()}
@@ -261,8 +255,8 @@ public class BrowserFingerprintManager
             UserAgent = profile.UserAgent,
             ViewportSize = profile.ViewportSize,
             ExtraHTTPHeaders = profile.ExtraHeaders,
-            Locale = profile.Language.Split(',')[0],
-            TimezoneId = profile.Timezone,
+         //   Locale = profile.Language.Split(',')[0],
+          //  TimezoneId = profile.Timezone,
             DeviceScaleFactor = profile.DevicePixelRatio
         };
 

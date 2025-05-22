@@ -8,28 +8,61 @@ using System.Threading.Tasks;
 
 class Program
 {
-    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(5); // Limit to 5 concurrent instances
+    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
     private static readonly ConcurrentDictionary<int, bool> _activeInstances = new ConcurrentDictionary<int, bool>();
     private static volatile bool _isRunning = true;
-    private static int noOfInstances = 5;
+    private static int noOfInstances = 1;
+    private static int loopCount = 10;
+    static string server = "https://geo.iproyal.com:12321";
+    static string username = "kx25pY99mFbmORvY";
+    static string password = "MhTTC3Ajh8bHkk8B_country-il";
 
     public static async Task Main()
     {
+        //Console.WriteLine("Enter the Proxy Server URL with port like  eg https://geo.iproyal.com:12321");
+        //server = Console.ReadLine();
+        //if (string.IsNullOrEmpty(server))
+        //{
+        //    Console.WriteLine("Enter a valid url");
+        //    return;
+        //}
+
+        //if (!server.StartsWith("http"))
+        //{
+        //    server = "https://" + server;
+        //}
+
+        //Console.WriteLine("Enter the Proxy Name :");
+        //username = Console.ReadLine();
+        //if (string.IsNullOrEmpty(username))
+        //{
+        //    Console.WriteLine("Enter a valid User Name");
+        //    return;
+        //}
+
+        //Console.WriteLine("Enter the Proxy Password");
+        //password = Console.ReadLine();
+        //if (string.IsNullOrEmpty(password))
+        //{
+        //    Console.WriteLine("Enter a valid Password");
+        //    return;
+        //}
+
         Console.WriteLine("Enter the website URL you want to visit:");
         string targetUrl = Console.ReadLine();
-        Console.WriteLine("Enter the number of iterations:");
 
-        if (!int.TryParse(Console.ReadLine(), out int loopCount))
-        {
-            Console.WriteLine("Invalid input. Using default count of 10.");
-            loopCount = 10;
-        }
-        Console.WriteLine("Enter the number of Instances:");
-
-        if (!int.TryParse(Console.ReadLine(), out int noOfInstances))
+        Console.WriteLine("Enter the number of browser instances to open:");
+        if (!int.TryParse(Console.ReadLine(), out noOfInstances))
         {
             Console.WriteLine("Invalid input. Using default count of 5.");
             noOfInstances = 5;
+        }
+
+        Console.WriteLine("Enter the number of iterations per instance:");
+        if (!int.TryParse(Console.ReadLine(), out loopCount))
+        {
+            Console.WriteLine("Invalid input. Using default count of 10.");
+            loopCount = 10;
         }
 
         if (string.IsNullOrEmpty(targetUrl))
@@ -43,66 +76,76 @@ class Program
             targetUrl = "https://" + targetUrl;
         }
 
-        Console.WriteLine("Starting browser instances with unique fingerprints...");
+        Console.WriteLine($"Starting {noOfInstances} browser instances, each running {loopCount} iterations...");
 
-        // Start monitoring task
-        var monitorTask = MonitorAndReplaceInstances(targetUrl);
-
-        // Start main processing
-        var processingTask = ProcessInstances(targetUrl, loopCount);
+        // Start the main processing with correct logic
+        var processingTask = ProcessInstances(targetUrl);
 
         // Wait for user input to stop
         Console.WriteLine("Press 'Q' to quit...");
         while (Console.ReadKey(true).Key != ConsoleKey.Q) { }
 
         _isRunning = false;
-        await Task.WhenAll(monitorTask, processingTask);
+        await processingTask;
     }
 
-    private static async Task ProcessInstances(string targetUrl, int loopCount)
+    private static async Task ProcessInstances(string targetUrl)
     {
-        var tasks = new List<Task>();
-        for (int i = 0; i < loopCount; i++)
+        var instanceTasks = new List<Task>();
+
+        // Create the specified number of browser instances
+        for (int instanceId = 0; instanceId < noOfInstances; instanceId++)
         {
             if (!_isRunning) break;
 
-            await _semaphore.WaitAsync();
-            var instanceId = i;
             _activeInstances[instanceId] = true;
 
-            var task = RunBrowserInstance(targetUrl, instanceId);
-            tasks.Add(task);
+            // Each instance will run its own iterations
+            var task = RunBrowserInstanceWithIterations(targetUrl, instanceId);
+            instanceTasks.Add(task);
         }
-        await Task.WhenAll(tasks);
+
+        // Wait for all instances to complete
+        await Task.WhenAll(instanceTasks);
     }
 
-    private static async Task MonitorAndReplaceInstances(string targetUrl)
+    private static async Task RunBrowserInstanceWithIterations(string targetUrl, int instanceId)
     {
-        while (_isRunning)
+        Console.WriteLine($"Instance {instanceId}: Started with {loopCount} iterations");
+
+        for (int iteration = 0; iteration < loopCount && _isRunning; iteration++)
         {
-            if (_activeInstances.Count < noOfInstances)
+            try
             {
-                var newInstanceId = _activeInstances.Count;
-                if (_semaphore.CurrentCount > 0 && !_activeInstances.ContainsKey(newInstanceId))
+                Console.WriteLine($"Instance {instanceId}: Starting iteration {iteration + 1}/{loopCount}");
+                await RunSingleBrowserSession(targetUrl, instanceId, iteration);
+
+                // Small delay between iterations for the same instance
+                if (iteration < loopCount - 1 && _isRunning)
                 {
-                    await _semaphore.WaitAsync();
-                    _activeInstances[newInstanceId] = true;
-                    _ = RunBrowserInstance(targetUrl, newInstanceId);
+                    var random = new Random();
+                    await Task.Delay(random.Next(2000, 5000));
                 }
             }
-            await Task.Delay(1000); // Check every second
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Instance {instanceId}, Iteration {iteration + 1}: Error - {ex.Message}");
+            }
         }
+
+        _activeInstances.TryRemove(instanceId, out _);
+        Console.WriteLine($"Instance {instanceId}: Completed all iterations");
     }
 
-    private static async Task RunBrowserInstance(string targetUrl, int instanceId)
+    private static async Task RunSingleBrowserSession(string targetUrl, int instanceId, int iteration)
     {
         try
         {
-            // Generate unique fingerprint for this instance
-            var fingerprintProfile = BrowserFingerprintManager.GenerateRandomFingerprint(instanceId);
+            // Generate unique fingerprint for this session
+            var fingerprintProfile = BrowserFingerprintManager.GenerateRandomFingerprint(instanceId * 1000 + iteration);
 
-            Console.WriteLine($"Instance {instanceId}: Generated fingerprint - UA: {fingerprintProfile.UserAgent.Substring(0, 50)}...");
-            Console.WriteLine($"Instance {instanceId}: Platform: {fingerprintProfile.Platform}, Viewport: {fingerprintProfile.ViewportSize.Width}x{fingerprintProfile.ViewportSize.Height}");
+            Console.WriteLine($"Instance {instanceId}-{iteration}: Generated fingerprint - UA: {fingerprintProfile.UserAgent.Substring(0, 50)}...");
+            Console.WriteLine($"Instance {instanceId}-{iteration}: Platform: {fingerprintProfile.Platform}, Viewport: {fingerprintProfile.ViewportSize.Width}x{fingerprintProfile.ViewportSize.Height}");
 
             using var playwright = await Playwright.CreateAsync();
 
@@ -118,9 +161,9 @@ class Program
             // Create proxy configuration
             var proxy = new Proxy
             {
-                Server = "https://geo.iproyal.com:12321",
-                Username = "kx25pY99mFbmORvY",
-                Password = "MhTTC3Ajh8bHkk8B_country-gb"
+                Server = server,
+                Username = username,
+                Password = password,
             };
 
             // Create context with fingerprint profile
@@ -159,31 +202,26 @@ class Program
                 });
             ");
 
-            Console.WriteLine($"Instance {instanceId}: Starting navigation to {targetUrl}");
+            Console.WriteLine($"Instance {instanceId}-{iteration}: Starting navigation to {targetUrl}");
             await page.GotoAsync(targetUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded, Timeout = 60000 });
 
             // Simulate human behavior
-            await SimulateHumanBehavior(page, instanceId);
+            await SimulateHumanBehavior(page, instanceId, iteration);
 
-            // Keep the browser open for a random duration between 10-60 seconds
+            // Keep the browser open for a random duration between 10-30 seconds
             var random = new Random();
-            await Task.Delay(random.Next(10000, 60000));
+            await Task.Delay(random.Next(10000, 30000));
 
             await browser.CloseAsync();
+            Console.WriteLine($"Instance {instanceId}-{iteration}: Session completed successfully");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Instance {instanceId} error: {ex.Message}");
-        }
-        finally
-        {
-            _activeInstances.TryRemove(instanceId, out _);
-            _semaphore.Release();
-            Console.WriteLine($"Instance {instanceId}: Closed");
+            Console.WriteLine($"Instance {instanceId}-{iteration} error: {ex.Message}");
         }
     }
 
-    private static async Task SimulateHumanBehavior(IPage page, int instanceId)
+    private static async Task SimulateHumanBehavior(IPage page, int instanceId, int iteration)
     {
         try
         {
@@ -227,11 +265,11 @@ class Program
                 }
             }
 
-            Console.WriteLine($"Instance {instanceId}: Completed human behavior simulation");
+            Console.WriteLine($"Instance {instanceId}-{iteration}: Completed human behavior simulation");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Instance {instanceId}: Behavior simulation error: {ex.Message}");
+            Console.WriteLine($"Instance {instanceId}-{iteration}: Behavior simulation error: {ex.Message}");
         }
     }
 }
