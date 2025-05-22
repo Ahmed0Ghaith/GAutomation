@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.Playwright;
+﻿using Microsoft.Playwright;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,7 +11,8 @@ class Program
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(5); // Limit to 5 concurrent instances
     private static readonly ConcurrentDictionary<int, bool> _activeInstances = new ConcurrentDictionary<int, bool>();
     private static volatile bool _isRunning = true;
-    private static int  noOfInstances = 5;
+    private static int noOfInstances = 5;
+
     public static async Task Main()
     {
         Console.WriteLine("Enter the website URL you want to visit:");
@@ -27,11 +26,12 @@ class Program
         }
         Console.WriteLine("Enter the number of Instances:");
 
- if (!int.TryParse(Console.ReadLine(), out int noOfInstances))
+        if (!int.TryParse(Console.ReadLine(), out int noOfInstances))
         {
             Console.WriteLine("Invalid input. Using default count of 5.");
             noOfInstances = 5;
         }
+
         if (string.IsNullOrEmpty(targetUrl))
         {
             Console.WriteLine("No URL provided. Using default website.");
@@ -42,6 +42,8 @@ class Program
         {
             targetUrl = "https://" + targetUrl;
         }
+
+        Console.WriteLine("Starting browser instances with unique fingerprints...");
 
         // Start monitoring task
         var monitorTask = MonitorAndReplaceInstances(targetUrl);
@@ -96,39 +98,74 @@ class Program
     {
         try
         {
+            // Generate unique fingerprint for this instance
+            var fingerprintProfile = BrowserFingerprintManager.GenerateRandomFingerprint(instanceId);
+
+            Console.WriteLine($"Instance {instanceId}: Generated fingerprint - UA: {fingerprintProfile.UserAgent.Substring(0, 50)}...");
+            Console.WriteLine($"Instance {instanceId}: Platform: {fingerprintProfile.Platform}, Viewport: {fingerprintProfile.ViewportSize.Width}x{fingerprintProfile.ViewportSize.Height}");
+
             using var playwright = await Playwright.CreateAsync();
+
             var launchOptions = new BrowserTypeLaunchOptions
             {
                 Headless = false,
                 SlowMo = 50,
-                Args = new[]
-                {
-                    "--disable-blink-features=AutomationControlled",
-                    "--disable-features=IsolateOrigins,site-per-process",
-                    $"--window-position={instanceId * 100},{instanceId * 50}", // Stagger windows
-                    "--window-size=800,600"
-                }
+                Args = fingerprintProfile.BrowserArgs
             };
 
             await using var browser = await playwright.Chromium.LaunchAsync(launchOptions);
-            var contextOptions = new BrowserNewContextOptions
+
+            // Create proxy configuration
+            var proxy = new Proxy
             {
-                Proxy = new Proxy
-                {
-                    Server = "https://geo.iproyal.com:12321",
-                    Username = "kx25pY99mFbmORvY",
-                    Password = "MhTTC3Ajh8bHkk8B_country-gb"
-                },
-                ViewportSize = new ViewportSize { Width = 800, Height = 600 }
+                Server = "https://geo.iproyal.com:12321",
+                Username = "kx25pY99mFbmORvY",
+                Password = "MhTTC3Ajh8bHkk8B_country-gb"
             };
 
+            // Create context with fingerprint profile
+            var contextOptions = BrowserFingerprintManager.CreateContextOptions(fingerprintProfile, proxy);
             var context = await browser.NewContextAsync(contextOptions);
+
+            // Apply additional fingerprint modifications
+            await BrowserFingerprintManager.ApplyFingerprintToContext(context, fingerprintProfile);
+
             var page = await context.NewPageAsync();
+
+            // Add additional stealth measures
+            await page.AddInitScriptAsync(@"
+                // Remove webdriver property
+                delete navigator.__proto__.webdriver;
+                
+                // Mock permissions
+                const originalQuery = window.navigator.permissions.query;
+                window.navigator.permissions.query = (parameters) => (
+                    parameters.name === 'notifications' ?
+                        Promise.resolve({ state: Notification.permission }) :
+                        originalQuery(parameters)
+                );
+
+                // Mock plugins
+                Object.defineProperty(navigator, 'plugins', {
+                    get: () => [
+                        {
+                            0: { type: 'application/x-google-chrome-pdf', suffixes: 'pdf', description: 'Portable Document Format', enabledPlugin: Plugin },
+                            description: 'Portable Document Format',
+                            filename: 'internal-pdf-viewer',
+                            length: 1,
+                            name: 'Chrome PDF Plugin'
+                        }
+                    ]
+                });
+            ");
 
             Console.WriteLine($"Instance {instanceId}: Starting navigation to {targetUrl}");
             await page.GotoAsync(targetUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded, Timeout = 60000 });
 
-            // Keep the browser open for a random duration between 30-60 seconds
+            // Simulate human behavior
+            await SimulateHumanBehavior(page, instanceId);
+
+            // Keep the browser open for a random duration between 10-60 seconds
             var random = new Random();
             await Task.Delay(random.Next(10000, 60000));
 
@@ -145,264 +182,56 @@ class Program
             Console.WriteLine($"Instance {instanceId}: Closed");
         }
     }
+
+    private static async Task SimulateHumanBehavior(IPage page, int instanceId)
+    {
+        try
+        {
+            var random = new Random();
+
+            // Random mouse movements
+            for (int i = 0; i < random.Next(2, 5); i++)
+            {
+                var x = random.Next(100, 700);
+                var y = random.Next(100, 500);
+                await page.Mouse.MoveAsync(x, y);
+                await Task.Delay(random.Next(500, 1500));
+            }
+
+            // Random scrolling
+            for (int i = 0; i < random.Next(1, 3); i++)
+            {
+                await page.Mouse.WheelAsync(0, random.Next(100, 500));
+                await Task.Delay(random.Next(1000, 2000));
+            }
+
+            // Try to interact with common elements if they exist
+            var commonSelectors = new[] { "input[type='text']", "input[type='search']", "a", "button" };
+
+            foreach (var selector in commonSelectors)
+            {
+                try
+                {
+                    var elements = await page.QuerySelectorAllAsync(selector);
+                    if (elements.Count > 0 && random.Next(3) == 0) // 33% chance to interact
+                    {
+                        var element = elements[random.Next(elements.Count)];
+                        await element.HoverAsync();
+                        await Task.Delay(random.Next(500, 1000));
+                        break;
+                    }
+                }
+                catch
+                {
+                    // Ignore errors for optional interactions
+                }
+            }
+
+            Console.WriteLine($"Instance {instanceId}: Completed human behavior simulation");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Instance {instanceId}: Behavior simulation error: {ex.Message}");
+        }
+    }
 }
-//using Microsoft.Playwright;
-//using System;
-//using System.Collections.Generic;
-//using System.IO;
-//using System.Threading.Tasks;
-
-//class Program
-//{
-//    public static async Task Main()
-//    {
-//        // Get user input for target website
-//        Console.WriteLine("Enter the website URL you want to visit:");
-//        string targetUrl = Console.ReadLine();
-//        int loopCount = int.Parse(Console.ReadLine());
-//        if (string.IsNullOrEmpty(targetUrl))
-//        {
-//            Console.WriteLine("No URL provided. Using default website.");
-//            targetUrl = "https://www.google.com";
-//        }
-
-//        if (!targetUrl.StartsWith("http"))
-//        {
-//            targetUrl = "https://" + targetUrl;
-//        }
-
-//        // Initialize Playwright
-//        using var playwright = await Playwright.CreateAsync();
-
-//        // Configure browser launch options with proxy and fingerprinting
-//        var launchOptions = new BrowserTypeLaunchOptions
-//        {
-//            Headless = false,
-//            SlowMo = 50,
-//            Args = new[]
-//            {
-//                "--disable-blink-features=AutomationControlled",
-//                "--disable-features=IsolateOrigins,site-per-process",
-//                "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
-//                "--window-size=1920,1080"
-//            }
-//        };
-
-//        // Launch browser
-//        var browser = await playwright.Chromium.LaunchAsync(launchOptions);
-
-//        // Create a context with specific options for fingerprinting
-//        var contextOptions = new BrowserNewContextOptions
-//        {
-//            Proxy = new Proxy
-//            {
-//                Server = "https://geo.iproyal.com:12321",
-//                Username = "kx25pY99mFbmORvY",
-//                Password = "MhTTC3Ajh8bHkk8B_country-gb"
-//            },
-//            ViewportSize = new ViewportSize
-//            {
-//                Width = 1920,
-//                Height = 1080
-//            },
-//            UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
-//          //  Locale = "en-GB",
-//          //  TimezoneId = "Europe/London",
-//            //Geolocation = new Geolocation
-//            //{
-//            //    Longitude = (float)-0.1278,
-//            //    Latitude = 51.5074,
-//            //    Accuracy = 1
-//            //},
-//            HasTouch = false,
-//            DeviceScaleFactor = 1,
-//            IsMobile = false,
-//            ColorScheme = ColorScheme.Light,
-//            ReducedMotion = ReducedMotion.NoPreference,
-//            ForcedColors = ForcedColors.None,
-//            AcceptDownloads = true
-//        };
-
-//        var context = await browser.NewContextAsync(contextOptions);
-
-//        // Enable JavaScript permissions
-//        await context.GrantPermissionsAsync(new[] { "geolocation", "notifications" });
-
-//        // Create a new page
-//        var page = await context.NewPageAsync();
-
-//        try
-//        {
-//            // First, visit some websites to add cookies and create browsing history
-//            //string[] seedSites = {
-//            //    "https://www.visitbritain.com/gb/en",
-//            //    "https://www.gov.uk/government/organisations/department-for-education",
-//            //    "https://www.aviva.co.uk/insurance/"
-//            //};
-
-//            // Visit seed websites and scroll to simulate real browsing
-//            //foreach (var site in seedSites)
-//            //{
-//            //    Console.WriteLine($"Visiting {site} to build browsing profile...");
-//            //    await page.GotoAsync(site, new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle, Timeout = 60000 });
-
-//            //    // Scroll down and up to simulate real user behavior
-//            //    await page.EvaluateAsync(@"() => {
-//            //        window.scrollTo(0, document.body.scrollHeight * 0.3);
-//            //    }");
-//            //    await Task.Delay(1000);
-
-//            //    await page.EvaluateAsync(@"() => {
-//            //        window.scrollTo(0, document.body.scrollHeight * 0.7);
-//            //    }");
-//            //    await Task.Delay(1000);
-
-//            //    await page.EvaluateAsync(@"() => {
-//            //        window.scrollTo(0, 0);
-//            //    }");
-//            //    await Task.Delay(1000);
-
-//            //    // Get cookies from this site to build up profile
-//            //    var cookies = await context.CookiesAsync(new[] { new URL(site).Host });
-//            //    Console.WriteLine($"Added {cookies.Length} cookies from {site}");
-//            //}
-
-//            //// Override specific fingerprint values via JavaScript
-//            //await page.AddInitScriptAsync(@"
-//            //    () => {
-//            //        // Override navigator properties
-//            //        Object.defineProperty(navigator, 'webdriver', {
-//            //            get: () => false
-//            //        });
-
-//            //        // Override plugins
-//            //        Object.defineProperty(navigator, 'plugins', {
-//            //            get: () => {
-//            //                return [
-//            //                    {
-//            //                        0: {type: 'application/pdf'},
-//            //                        description: 'Portable Document Format',
-//            //                        filename: 'internal-pdf-viewer',
-//            //                        length: 1,
-//            //                        name: 'PDF Viewer'
-//            //                    },
-//            //                    {
-//            //                        0: {type: 'application/x-google-chrome-pdf'},
-//            //                        description: 'Chrome PDF Plugin',
-//            //                        filename: 'internal-pdf-viewer',
-//            //                        length: 1,
-//            //                        name: 'Chrome PDF Plugin'
-//            //                    }
-//            //                ];
-//            //            }
-//            //        });
-
-//            //        // Override canvas fingerprinting
-//            //        const originalToDataURL = HTMLCanvasElement.prototype.toDataURL;
-//            //        HTMLCanvasElement.prototype.toDataURL = function(type) {
-//            //            if (type === 'image/png' && this.width === 220 && this.height === 30) {
-//            //                // This is likely a fingerprinting attempt
-//            //                return originalToDataURL.apply(this, [type]);
-//            //            }
-//            //            return originalToDataURL.apply(this, arguments);
-//            //        };
-
-//            //        // Override WebGL fingerprinting
-//            //        const getParameter = WebGLRenderingContext.prototype.getParameter;
-//            //        WebGLRenderingContext.prototype.getParameter = function(parameter) {
-//            //            // VENDOR and RENDERER are commonly used for fingerprinting
-//            //            if (parameter === 37445) {
-//            //                return 'Intel Inc.';
-//            //            }
-//            //            if (parameter === 37446) {
-//            //                return 'Intel Iris Pro Graphics';
-//            //            }
-//            //            return getParameter.apply(this, arguments);
-//            //        };
-//            //    }
-//            //");
-
-//            // Now visit the user's requested website
-//            Console.WriteLine($"Navigating to target website: {targetUrl}");
-
-//            // Navigate to the user-specified URL
-//            await page.GotoAsync(targetUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded, Timeout = 60000 });
-
-//            Console.WriteLine("Page loaded successfully");
-
-//            // Wait for any additional resources to load
-//            await Task.Delay(10000);
-
-//            // Check IP address
-//            //Console.WriteLine("Checking IP address...");
-//            //await page.GotoAsync("https://whatismyipaddress.com/", new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
-//            //var ipElement = await page.QuerySelectorAsync("a[href^='/ip/']");
-//            //string ip = await ipElement.TextContentAsync();
-//            //Console.WriteLine($"Current IP: {ip}");
-
-//            // Return to the target website
-//            await page.GotoAsync(targetUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
-
-//            // Implement smooth scrolling behavior
-//            Console.WriteLine("Starting scrolling simulation...");
-
-//            // Scroll down to end of page over 5 seconds
-//            //await page.EvaluateAsync(@"() => {
-//            //    return new Promise((resolve) => {
-//            //        const totalHeight = document.body.scrollHeight;
-//            //        const duration = 5000; // 5 seconds
-//            //        const scrollStep = totalHeight / (duration / 100);
-//            //        let currentPosition = 0;
-
-//            //        const scrollInterval = setInterval(() => {
-//            //            if (currentPosition < totalHeight) {
-//            //                window.scrollBy(0, scrollStep);
-//            //                currentPosition += scrollStep;
-//            //            } else {
-//            //                clearInterval(scrollInterval);
-//            //                resolve();
-//            //            }
-//            //        }, 100);
-//            //    });
-//            //}");
-
-//            //// Wait a moment at the bottom
-//            //await Task.Delay(2000);
-
-//            //// Scroll back up over 3 seconds
-//            //await page.EvaluateAsync(@"() => {
-//            //    return new Promise((resolve) => {
-//            //        const duration = 3000; // 3 seconds
-//            //        const currentPosition = window.pageYOffset;
-//            //        const scrollStep = currentPosition / (duration / 100);
-//            //        let remaining = currentPosition;
-
-//            //        const scrollInterval = setInterval(() => {
-//            //            if (remaining > 0) {
-//            //                window.scrollBy(0, -scrollStep);
-//            //                remaining -= scrollStep;
-//            //            } else {
-//            //                clearInterval(scrollInterval);
-//            //                window.scrollTo(0, 0);
-//            //                resolve();
-//            //            }
-//            //        }, 100);
-//            //    });
-//            //}");
-
-//            Console.WriteLine("Website exploration complete!");
-//            Console.WriteLine("Press any key to exit the browser...");
-//            Console.ReadKey();
-//        }
-//        catch (Exception ex)
-//        {
-//            Console.WriteLine($"Error during browsing: {ex.Message}");
-//            Console.WriteLine($"Stack trace: {ex.StackTrace}");
-//        }
-//        finally
-//        {
-//            // Clean up
-//            await browser.CloseAsync();
-//        }
-//    }
-//}
