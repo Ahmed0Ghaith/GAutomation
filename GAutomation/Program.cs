@@ -13,18 +13,25 @@ class Program
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(5); // Limit to 5 concurrent instances
     private static readonly ConcurrentDictionary<int, bool> _activeInstances = new ConcurrentDictionary<int, bool>();
     private static volatile bool _isRunning = true;
-
+    private static int  noOfInstances = 5;
     public static async Task Main()
     {
         Console.WriteLine("Enter the website URL you want to visit:");
         string targetUrl = Console.ReadLine();
         Console.WriteLine("Enter the number of iterations:");
+
         if (!int.TryParse(Console.ReadLine(), out int loopCount))
         {
             Console.WriteLine("Invalid input. Using default count of 10.");
             loopCount = 10;
         }
+        Console.WriteLine("Enter the number of Instances:");
 
+ if (!int.TryParse(Console.ReadLine(), out int noOfInstances))
+        {
+            Console.WriteLine("Invalid input. Using default count of 5.");
+            noOfInstances = 5;
+        }
         if (string.IsNullOrEmpty(targetUrl))
         {
             Console.WriteLine("No URL provided. Using default website.");
@@ -71,7 +78,7 @@ class Program
     {
         while (_isRunning)
         {
-            if (_activeInstances.Count < 5)
+            if (_activeInstances.Count < noOfInstances)
             {
                 var newInstanceId = _activeInstances.Count;
                 if (_semaphore.CurrentCount > 0 && !_activeInstances.ContainsKey(newInstanceId))
