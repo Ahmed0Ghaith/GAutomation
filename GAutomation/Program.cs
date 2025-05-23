@@ -13,44 +13,44 @@ class Program
     private static volatile bool _isRunning = true;
     private static int noOfInstances = 1;
     private static int loopCount = 1;
-    static string server = "https://geo.iproyal.com:12321";
-    static string username = "kx25pY99mFbmORvY";
-    static string password = "MhTTC3Ajh8bHkk8B_country-il";
+    static string server = "";
+    static string username = "";
+    static string password = "";
     static string cssSelector = "";
 
     public static async Task Main()
     {
         Console.WriteLine("Enter the Proxy Server URL with port like  eg https://geo.iproyal.com:12321");
-        //server = Console.ReadLine();
-        //if (string.IsNullOrEmpty(server))
-        //{
-        //    Console.WriteLine("Enter a valid url");
-        //    return;
-        //}
+        server = Console.ReadLine();
+        if (string.IsNullOrEmpty(server))
+        {
+            Console.WriteLine("Enter a valid url");
+            return;
+        }
 
-        //if (!server.StartsWith("http"))
-        //{
-        //    server = "https://" + server;
-        //}
+        if (!server.StartsWith("http"))
+        {
+            server = "https://" + server;
+        }
 
-        //Console.WriteLine("Enter the Proxy Name :");
-        //username = Console.ReadLine();
-        //if (string.IsNullOrEmpty(username))
-        //{
-        //    Console.WriteLine("Enter a valid User Name");
-        //    return;
-        //}
+        Console.WriteLine("Enter the Proxy Name :");
+        username = Console.ReadLine();
+        if (string.IsNullOrEmpty(username))
+        {
+            Console.WriteLine("Enter a valid User Name");
+            return;
+        }
 
-        //Console.WriteLine("Enter a valid User Password");
-        //password = Console.ReadLine();
-        //if (string.IsNullOrEmpty(password))
-        //{
-        //    Console.WriteLine("Enter a valid Password");
-        //    return;
-        //}
+        Console.WriteLine("Enter a valid User Password");
+        password = Console.ReadLine();
+        if (string.IsNullOrEmpty(password))
+        {
+            Console.WriteLine("Enter a valid Password");
+            return;
+        }
 
-    
-        
+
+
 
 
         Console.WriteLine("Enter the website URL you want to visit:");
@@ -342,7 +342,7 @@ class Program
         {
             Console.WriteLine($"Instance {instanceId}-{iteration}: Attempting to find and click CSS selector: {cssSelector}");
 
-            var element = await page.QuerySelectorAsync(cssSelector);
+            var element = page.Locator(cssSelector);
             await element.ClickAsync();
             //if (element != null)
             //{
