@@ -1,0 +1,16 @@
+{
+  "NoOfInstances": 3,
+  "LoopCount": 2,
+  "Server": "https://geo.iproyal.com:12321",
+  "Username": "your_proxy_username",
+  "Password": "your_proxy_password",
+  "TargetUrl": "https://example.com",
+  "CssSelector": "#main-button",
+  "HeadlessMode": false,
+  "MinDelayBetweenInstances": 3000,
+  "MaxDelayBetweenInstances": 8000,
+  "MinScrollDelay": 500,
+  "MaxScrollDelay": 2000,
+  "MinPageStayTime": 8000,
+  "MaxPageStayTime": 20000
+}
