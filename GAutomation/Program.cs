@@ -20,6 +20,9 @@ class Program
     static string Selector3 = "";
     static string Selector4 = "";
     static string Selector5 = "";
+    static int minMin = 3;
+    static int maxMin = 5;
+
 
 
 
@@ -61,7 +64,28 @@ class Program
 
         Console.WriteLine("Enter the website URL you want to visit:");
         string targetUrl = Console.ReadLine();
+        Console.WriteLine("Enter the Min time by secound to wait eg 2 for 2 secound ");
+       string min = Console.ReadLine();
+        if (string.IsNullOrEmpty(min))
+        {
+            Console.WriteLine("Min time by secound to wait 5 s");
 
+        }
+        else
+        {
+            minMin = int.TryParse(min, out int minVal) ? minMin : 2;
+        }
+        Console.WriteLine("Enter the Max time by secound to wait eg 5 for 5 secound");
+        string max = Console.ReadLine();
+        if (string.IsNullOrEmpty(max))
+        {
+            Console.WriteLine("Max time by secound to wait 5 s");
+
+        }
+        else
+        { 
+        maxMin = int.TryParse(max, out int maxValue) ? maxValue : 5;
+        }
         Console.WriteLine("Enter Frist Selector  to click ");
         Selector1 = Console.ReadLine();
         if (string.IsNullOrEmpty(Selector1))
@@ -331,6 +355,7 @@ class Program
             var startTime = DateTime.Now;
 
             Console.WriteLine($"Instance {instanceId}-{iteration}: Starting {phase} scroll behavior simulation");
+            await Task.Delay(random.Next(minMin*1000, maxMin*1000));
 
             // Phase 1: Scroll down gradually (20 seconds)
             var scrollDownEndTime = startTime.AddSeconds(20);
