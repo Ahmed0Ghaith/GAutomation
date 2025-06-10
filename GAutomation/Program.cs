@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 class Program
 {
-    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
     private static readonly ConcurrentDictionary<int, bool> _activeInstances = new ConcurrentDictionary<int, bool>();
     private static volatile bool _isRunning = true;
     private static int noOfInstances = 1;
@@ -16,7 +15,14 @@ class Program
     static string server = "";
     static string username = "";
     static string password = "";
-    static string cssSelector = "";
+    static string Selector1 = "";
+    static string Selector2 = "";
+    static string Selector3 = "";
+    static string Selector4 = "";
+    static string Selector5 = "";
+
+
+
 
     public static async Task Main()
     {
@@ -56,14 +62,53 @@ class Program
         Console.WriteLine("Enter the website URL you want to visit:");
         string targetUrl = Console.ReadLine();
 
-        Console.WriteLine("Enter Selector  to click ");
-        cssSelector = Console.ReadLine();
-        if (string.IsNullOrEmpty(cssSelector))
+        Console.WriteLine("Enter Frist Selector  to click ");
+        Selector1 = Console.ReadLine();
+        if (string.IsNullOrEmpty(Selector1))
         {
-            Console.WriteLine("No XPath selector provided. Will only perform scrolling without clicking.");
+            Console.WriteLine("No XPath selector provided. Will only perform scrolling without clicking on Frist.");
         }
+        else
+        {
+            Console.WriteLine("Enter Secound Selector  to click ");
+            Selector2 = Console.ReadLine();
+            if (string.IsNullOrEmpty(Selector2))
+            {
+                Console.WriteLine("No XPath selector provided. Will only perform scrolling without clicking on Secound.");
+            }
+            else
+            {
+                Console.WriteLine("Enter Third Selector  to click ");
 
-        Console.WriteLine("Enter the number of browser instances to open:");
+                Selector3 = Console.ReadLine();
+                if (string.IsNullOrEmpty(Selector3))
+                {
+                    Console.WriteLine("No XPath selector provided. Will only perform scrolling without clicking on Third.");
+                }
+                else
+                {
+                    Console.WriteLine("Enter Fourth Selector  to click ");
+
+                    Selector4 = Console.ReadLine();
+                    if (string.IsNullOrEmpty(Selector4))
+                    {
+                        Console.WriteLine("No XPath selector provided. Will only perform scrolling without clicking on Fourth.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Enter Fifth Selector  to click ");
+
+                        Selector5 = Console.ReadLine();
+                        if (string.IsNullOrEmpty(Selector5))
+                        {
+                            Console.WriteLine("No XPath selector provided. Will only perform scrolling without clicking on Fifth .");
+                        }
+                    }
+                }
+            }
+        }
+            Console.WriteLine("Enter the number of browser instances to open:");
+
         if (!int.TryParse(Console.ReadLine(), out noOfInstances))
         {
             Console.WriteLine("Invalid input. Using default count of 5.");
@@ -88,12 +133,7 @@ class Program
             targetUrl = "https://" + targetUrl;
         }
 
-        Console.WriteLine($"Starting {noOfInstances} browser instances, each running {loopCount} iterations...");
-        if (!string.IsNullOrEmpty(cssSelector))
-        {
-            Console.WriteLine($"Will click on elements matching XPath: {cssSelector}");
-        }
-
+     
         // Start the main processing with correct logic
         var processingTask = ProcessInstances(targetUrl);
 
@@ -250,11 +290,29 @@ class Program
             await PerformScrollingBehavior(page, instanceId, iteration, "Initial");
 
             // Try to click on the CSS selector
-            await AttemptSelectorClick(page, instanceId, iteration);
+            if (!string.IsNullOrEmpty(Selector1))
+            {
+                await AttemptSelectorClick(Selector1, page, instanceId, iteration);
+                if (!string.IsNullOrEmpty(Selector2))
+                {
+                    await AttemptSelectorClick(Selector2, page, instanceId, iteration);
+                    if (!string.IsNullOrEmpty(Selector3))
+                    { 
+                    await AttemptSelectorClick(Selector3, page, instanceId, iteration);
+                        if (!string.IsNullOrEmpty(Selector4))
+                        { 
+                    await AttemptSelectorClick(Selector4, page, instanceId, iteration);
+                            if (!string.IsNullOrEmpty(Selector5))
+                            {
+                                await AttemptSelectorClick(Selector5, page, instanceId, iteration);
 
+                            }
+                        }
+                    }
+                }
+            }
             // Second round of scrolling after clicking
-            Console.WriteLine($"Instance {instanceId}-{iteration}: Starting second round of scrolling");
-            await PerformScrollingBehavior(page, instanceId, iteration, "Second");
+       
 
             var elapsedTime = (DateTime.Now - startTime).TotalSeconds;
             Console.WriteLine($"Instance {instanceId}-{iteration}: Completed full behavior simulation in {elapsedTime:F1} seconds");
@@ -336,70 +394,16 @@ class Program
         }
     }
 
-    private static async Task AttemptSelectorClick(IPage page, int instanceId, int iteration)
+    private static async Task AttemptSelectorClick(string Selector,IPage page, int instanceId, int iteration)
     {
         try
         {
-            Console.WriteLine($"Instance {instanceId}-{iteration}: Attempting to find and click CSS selector: {cssSelector}");
+            Console.WriteLine($"Instance {instanceId}-{iteration}: Attempting to find and click CSS selector: {Selector}");
 
-            var element = page.Locator(cssSelector);
+            var element = page.Locator(Selector);
             await element.ClickAsync();
-            //if (element != null)
-            //{
-            //    await element.ClickAsync();
-            //    Console.WriteLine($"Instance {instanceId}-{iteration}: Successfully clicked on CSS selector element (simple click)");
-            //    await Task.Delay(new Random().Next(1000, 2000));
-
-            //}
-            //else
-            //{ 
-            //    Console.WriteLine($"Instance {instanceId}-{iteration}: Element with CSS selector '{cssSelector}' not found or not visible");
-
-            //}
-            //// Wait for the element to be available using CSS selector
-            //var element = await page.WaitForSelectorAsync(cssSelector, new PageWaitForSelectorOptions
-            //{
-            //    Timeout = 10000,
-            //    State = WaitForSelectorState.Visible
-            //});
-
-            //if (element != null)
-            //{
-            //    // Scroll element into view smoothly
-            //    await element.ScrollIntoViewIfNeededAsync();
-            //    await Task.Delay(500);
-
-            //    // Get element position for more natural clicking
-            //    var boundingBox = await element.BoundingBoxAsync();
-            //    if (boundingBox != null)
-            //    {
-            //        var random = new Random();
-            //        var clickX = (float)(boundingBox.X + (boundingBox.Width * random.NextDouble()));
-            //        var clickY = (float)(boundingBox.Y + (boundingBox.Height * random.NextDouble()));
-
-            //        // Move mouse to the element first, then click
-            //        await page.Mouse.MoveAsync(clickX, clickY);
-
-            //        await Task.Delay(random.Next(200, 500));
-
-            //        await element.ClickAsync();
-            //        Console.WriteLine($"Instance {instanceId}-{iteration}: Successfully clicked on CSS selector element at ({clickX:F1}, {clickY:F1})");
-
-            //        // Wait a bit after clicking
-            //        await Task.Delay(random.Next(1000, 2000));
-            //    }
-            //    else
-            //    {
-            //        // Fallback to simple click
-            //        await element.ClickAsync();
-            //        Console.WriteLine($"Instance {instanceId}-{iteration}: Successfully clicked on CSS selector element (simple click)");
-            //        await Task.Delay(new Random().Next(1000, 2000));
-            //    }
-            //}
-            //else
-            //{
-            //    Console.WriteLine($"Instance {instanceId}-{iteration}: Element with CSS selector '{cssSelector}' not found or not visible");
-            //}
+            Console.WriteLine($"Instance {instanceId}-{iteration}: Starting second round of scrolling");
+            await PerformScrollingBehavior(page, instanceId, iteration, nameof(Selector));
         }
         catch (TimeoutException)
         {
