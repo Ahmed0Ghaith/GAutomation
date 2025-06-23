@@ -1,0 +1,52 @@
+{
+  "proxy": {
+    "server": "https://geo.iproyal.com:12321",
+    "username": "your_proxy_username",
+    "password": "your_proxy_password"
+  },
+  "targetUrl": "https://www.example.com",
+  "noOfInstances": 3,
+  "loopCount": 2,
+  "actionSequence": [
+    {
+      "type": "wait",
+      "duration": 5,
+      "description": "Wait for page to load"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 15,
+      "description": "Scroll down to explore content"
+    },
+    {
+      "type": "click",
+      "selector": "#main-navigation > ul > li:nth-child(2) > a",
+      "description": "Click on second navigation item"
+    },
+    {
+      "type": "wait",
+      "duration": 3,
+      "description": "Wait after clicking navigation"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 10,
+      "description": "Scroll down on new page"
+    },
+    {
+      "type": "click",
+      "selector": "//button[@class='submit-btn']",
+      "description": "Click submit button using XPath"
+    },
+    {
+      "type": "scroll_up",
+      "duration": 10,
+      "description": "Scroll back up"
+    },
+    {
+      "type": "wait",
+      "duration": 2,
+      "description": "Final wait before session end"
+    }
+  ]
+}
