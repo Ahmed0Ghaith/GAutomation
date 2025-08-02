@@ -36,8 +36,10 @@ cd MyPlaywrightTestProject
 dotnet add package Microsoft.Playwright
 dotnet build
 
+cd ~/GAutomation-kloudytech/
 dotnet tool install --global Microsoft.Playwright.CLI
-
-export PATH="$PATH:$HOME/.dotnet/tools"
-
+echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> ~/.bashrc
+source ~/.bashrc                                                                 
+echo $PATH
 playwright install
+dotnet run
