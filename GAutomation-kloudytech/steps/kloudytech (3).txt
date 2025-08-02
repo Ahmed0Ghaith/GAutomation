@@ -1,0 +1,80 @@
+url: gw.dataimpulse.com:824
+username: cce198c518902564b817__cr.ae,gb
+pass: 548ce06e28073a11
+website url: 
+https://t.co/73WkOg5JjX
+https://www.linkedin.com/redir/redirect?url=https%3A%2F%2Fwww%2Ekloudytech%2Ecom&urlhash=R9Pu&trk=public_post-text
+
+
+wait 30
+scroll_down 80
+scroll_up 80
+scroll_down 8
+click #wp--skip-link--target > div > ul > li.wp-block-post.post-394.post.type-post.status-publish.format-standard.hentry.category-business > div > div > h2 > a
+wait 15
+scroll_down 100
+scroll_up 100
+scroll_down 50
+wait 3
+click #wp--skip-link--target > div.wp-block-group.has-global-padding.is-layout-constrained.wp-container-core-group-is-layout-b858d49e.wp-block-group-is-layout-constrained > div.wp-block-group.superb-single-post-tags-categories.has-global-padding.is-content-justification-left.is-layout-constrained.wp-container-core-group-is-layout-c2edf20c.wp-block-group-is-layout-constrained > div > a
+wait 10
+scroll_down 10
+scroll_up 10
+scroll_down 5
+wait 3
+click body > div.wp-site-blocks > div > main > div > ul > li.wp-block-post.post-404.post.type-post.status-publish.format-standard.hentry.category-business.category-uncategorized > div > div > h2 > a
+wait 15
+scroll_down 100
+scroll_up 100
+scroll_down 50
+wait 3
+done
+1
+1
+
+
+https://www.kloudytech.com/
+
+https://t.co/73WkOg5JjX
+https://t.co/73WkOg5JjX
+
+1-1st article:
+#wp--skip-link--target > div > ul > li.wp-block-post.post-394.post.type-post.status-publish.format-standard.hentry.category-business > div > div > h2 > a
+//*[@id="wp--skip-link--target"]/div/ul/li[1]/div/div/h2/a
+
+2-scroll down then:
+#wp--skip-link--target > div.wp-block-group.has-global-padding.is-layout-constrained.wp-container-core-group-is-layout-b858d49e.wp-block-group-is-layout-constrained > div.wp-block-group.superb-single-post-tags-categories.has-global-padding.is-content-justification-left.is-layout-constrained.wp-container-core-group-is-layout-c2edf20c.wp-block-group-is-layout-constrained > div > a
+3-then:
+body > div.wp-site-blocks > div > main > div > ul > li.wp-block-post.post-404.post.type-post.status-publish.format-standard.hentry.category-business.category-uncategorized > div > div > h2 > a
+
+
+
+second article:
+#wp--skip-link--target > div > ul > li.wp-block-post.post-392.post.type-post.status-publish.format-standard.hentry.category-news > div > div > h2 > a
+//*[@id="wp--skip-link--target"]/div/ul/li[2]/div/div/h2/a
+
+2-scroll down then:
+#wp--skip-link--target > div.wp-block-group.has-global-padding.is-layout-constrained.wp-container-core-group-is-layout-b858d49e.wp-block-group-is-layout-constrained > div.wp-block-group.superb-single-post-tags-categories.has-global-padding.is-content-justification-left.is-layout-constrained.wp-container-core-group-is-layout-c2edf20c.wp-block-group-is-layout-constrained > div > a
+3-then:
+body > div.wp-site-blocks > div > main > div > ul > li.wp-block-post.post-407.post.type-post.status-publish.format-standard.hentry.category-news > div > div > h2 > a
+
+
+
+3rd  article:
+#wp--skip-link--target > div > ul > li.wp-block-post.post-407.post.type-post.status-publish.format-standard.hentry.category-news > div > div > h2 > a
+//*[@id="wp--skip-link--target"]/div/ul/li[3]/div/div/h2/a
+
+2-scroll down then:
+#wp--skip-link--target > div.wp-block-group.has-global-padding.is-layout-constrained.wp-container-core-group-is-layout-b858d49e.wp-block-group-is-layout-constrained > div.wp-block-group.superb-single-post-tags-categories.has-global-padding.is-content-justification-left.is-layout-constrained.wp-container-core-group-is-layout-c2edf20c.wp-block-group-is-layout-constrained > div > a
+3-then:
+body > div.wp-site-blocks > div > main > div > ul > li.wp-block-post.post-392.post.type-post.status-publish.format-standard.hentry.category-news > div > div > h2 > a
+
+
+4th articel:
+#wp--skip-link--target > div > ul > li.wp-block-post.post-404.post.type-post.status-publish.format-standard.hentry.category-business.category-uncategorized > div > div > h2 > a
+//*[@id="wp--skip-link--target"]/div/ul/li[4]/div/div/h2/a
+
+2-scroll down then:
+#wp--skip-link--target > div.wp-block-group.has-global-padding.is-layout-constrained.wp-container-core-group-is-layout-b858d49e.wp-block-group-is-layout-constrained > div.wp-block-group.superb-single-post-tags-categories.has-global-padding.is-content-justification-left.is-layout-constrained.wp-container-core-group-is-layout-c2edf20c.wp-block-group-is-layout-constrained > div > a:nth-child(1)
+3-then:
+body > div.wp-site-blocks > div > main > div > ul > li.wp-block-post.post-394.post.type-post.status-publish.format-standard.hentry.category-business > div > div > h2 > a

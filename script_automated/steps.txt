@@ -1,0 +1,122 @@
+installing dotnet on windows:
+
+1- download the official dotnet8.exe must be 8.x install it
+
+after installation
+if windows 7 >> add the path /user/program x/dotnet to the path in the user variables not in the system
+
+
+
+1- install dotnet and playwright
+dotnet tool install --global Microsoft.Playwright.CLI
+
+2-check path
+environment
+📌 Option 1: Using Search
+Press Windows Key and type:
+"environment variables"
+
+Click "Edit the system environment variables"
+
+In the System Properties window that opens, click the Environment Variables... button near the bottom.
+C:\Users\<YourUsername>\.dotnet\tools
+
+
+3-create folder source then repos then MyPlaywrightTestProject
+C:\Users\Abdelaziz\source\repos\MyPlaywrightTestProject
+cd ~\source\repos
+dotnet new console -n MyPlaywrightTestProject
+cd MyPlaywrightTestProject
+dotnet add package Microsoft.Playwright
+dotnet build
+
+
+dotnet playwright install
+
+
+
+
+**********************************************************************
+3- if error still appears:
+********
+PS C:\Users\Abdelaziz\source\repos\MyPlaywrightTestProject> dotnet playwright install
+Could not execute because the specified command or file was not found.
+Possible reasons for this include:
+  * You misspelled a built-in dotnet command.
+  * You intended to execute a .NET program, but dotnet-playwright does not exist.
+  * You intended to run a global tool, but a dotnet-prefixed executable with this name could not be found on the PATH.
+*******************
+
+cd ~\source\repos
+dotnet new console -n MyPlaywrightTestProject
+cd MyPlaywrightTestProject
+dotnet add package Microsoft.Playwright
+
+dotnet playwright install
+
+
+4- if error still appeares:
+********
+PS C:\Users\Abdelaziz\source\repos\MyPlaywrightTestProject> dotnet playwright install
+Could not execute because the specified command or file was not found.
+Possible reasons for this include:
+  * You misspelled a built-in dotnet command.
+  * You intended to execute a .NET program, but dotnet-playwright does not exist.
+  * You intended to run a global tool, but a dotnet-prefixed executable with this name could not be found on the PATH.
+*******************
+✅ : Add Playwright to your project
+
+cd C:\Users\Abdelaziz\source\repos\MyPlaywrightTestProject
+
+dotnet add package Microsoft.Playwright
+dotnet build
+playwright install
+
+
+**************************
+
+for ubuntu
+✅ Step 1: Install .NET SDK on Ubuntu
+#Install prerequisites:
+
+sudo apt update
+sudo apt install -y wget apt-transport-https software-properties-common
+
+
+#Add Microsoft package repository:
+
+wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+Install the .NET SDK (latest LTS, e.g., .NET 8 at time of writing):
+
+
+sudo apt update
+sudo apt install -y dotnet-sdk-8.0
+
+#Verify installation:
+
+dotnet --version
+
+✅ Step 2: Install Playwright for .NET
+
+mkdir -p ~/source/repos
+cd ~/source/repos
+dotnet new console -n MyPlaywrightTestProject
+
+cd MyPlaywrightTestProject
+
+#Add the Playwright NuGet package:
+
+dotnet add package Microsoft.Playwright
+dotnet build
+
+
+
+#Install Playwright browsers:
+
+dotnet tool install --global Microsoft.Playwright.CLI
+
+export PATH="$PATH:$HOME/.dotnet/tools"
+
+playwright install
+

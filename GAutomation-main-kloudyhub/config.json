@@ -1,0 +1,119 @@
+{
+  "proxy": {
+    "server": "na.proxys5.net:6200",
+    "username": "65390150-zone-custom-region-US",
+    "password": "lQQIyr0u"
+  },
+  "targetUrl": "https://t.co/kcE1ZCOvIz",
+  "noOfInstances": 1,
+  "loopCount": 2,
+  "actionSequence": [
+    {
+      "type": "wait",
+      "duration": 20,
+      "selector": null,
+      "description": "Wait for 20 seconds"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll down for 50 seconds"
+    },
+    {
+      "type": "scroll_up",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll up for 50 seconds"
+    },
+    {
+      "type": "click",
+      "duration": 0,
+      "selector": "#post-15 > div > div:nth-child(5) > div > div:nth-child(2) > div:nth-child(1) > div > div > figure > a",
+      "description": "Click on post 1"
+    },
+      {
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 5 seconds"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll down for 60 seconds"
+    },
+    {
+      "type": "scroll_up",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll up for 60 seconds"
+    },
+    {
+      "type": "click",
+      "duration": 0,
+      "selector": "#main > nav > div > div > a",
+      "description": "Click on post 2"
+    }
+    ,{
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 5 seconds"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll down for 60 seconds"
+    },
+    {
+      "type": "scroll_up",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll up for 60 seconds"
+    },
+    {
+      "type": "click",
+      "duration": 0,
+      "selector": "#main > nav > div > div > a",
+      "description": "Click on post 3"
+    }  ,{
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 5 seconds"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll down for 50 seconds"
+    },
+    {
+      "type": "scroll_up",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll up for 50 seconds"
+    },
+    {
+      "type": "click",
+      "duration": 0,
+      "selector": "#main > nav > div > div > a",
+      "description": "Click on post 4"
+    },{
+      "type": "wait",
+      "duration": 15,
+      "selector": null,
+      "description": "Wait for 15 seconds"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll down for 50 seconds"
+    }
+
+  ]
+}

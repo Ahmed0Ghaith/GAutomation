@@ -1,0 +1,157 @@
+{
+  "proxy": {
+    "server": "eu.proxys5.net:6200",
+    "username": "65390150-zone-custom-region-GB",
+    "password": "lQQIyr0u"
+  },
+  "targetUrl": "https://t.co/73WkOg5JjX",
+  "noOfInstances": 7,
+  "loopCount": 4,
+  "actionSequence": [
+    {
+      "type": "wait",
+      "duration": 30,
+      "selector": null,
+      "description": "Wait for 30 seconds"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 5,
+      "selector": null,
+      "description": "Scroll down for 5 seconds"
+    },
+    {
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 10 seconds"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 5,
+      "selector": null,
+      "description": "Scroll down for 5 seconds"
+    },
+    {
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 10 seconds"
+    },
+    {
+      "type": "scroll_up",
+      "duration": 5,
+      "selector": null,
+      "description": "Scroll up for 5 seconds"
+    },
+    {
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 10 seconds"
+    },
+    {
+      "type": "scroll_up",
+      "duration": 5,
+      "selector": null,
+      "description": "Scroll up for 5 seconds"
+    },
+    {
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 10 seconds"
+    },
+    {
+      "type": "click",
+      "duration": 0,
+      "selector": "#post-404 > div > header > h2 > a",
+      "description": "Click on post 1"
+    },
+      {
+      "type": "wait",
+      "duration": 25,
+      "selector": null,
+      "description": "Wait for 25 seconds"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll down for 20 seconds"
+    },
+    {
+      "type": "scroll_up",
+      "duration": 10,
+      "selector": null,
+      "description": "Scroll up for 10 seconds"
+    },
+      {
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 5 seconds"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll down for 20 seconds"
+    },
+    {
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 10 seconds"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 20,
+      "selector": null,
+      "description": "Scroll down for 20 seconds"
+    },
+    {
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 10 seconds"
+    },
+    
+    {
+      "type": "scroll_up",
+      "duration": 25,
+      "selector": null,
+      "description": "Scroll up for 25 seconds"
+    },
+    {
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 10 seconds"
+    },
+    {
+      "type": "scroll_up",
+      "duration": 35,
+      "selector": null,
+      "description": "Scroll up for 35 seconds"
+    },
+    {
+      "type": "wait",
+      "duration": 10,
+      "selector": null,
+      "description": "Wait for 10 seconds"
+    },
+    {
+      "type": "scroll_down",
+      "duration": 50,
+      "selector": null,
+      "description": "Scroll down for 50 seconds"
+    },
+    {
+      "type": "wait",
+      "duration": 15,
+      "selector": null,
+      "description": "Wait for 15 seconds"
+    }
+  ]
+}
