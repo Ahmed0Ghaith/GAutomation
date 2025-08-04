@@ -1,7 +1,20 @@
-﻿dotnet tool install --global Microsoft.Playwright.CLI
-npx playwright install
+Windows:
+powershell
+# Basic installation
+.\install-windows.ps1
 
+# Skip .NET if already installed
+.\install-windows.ps1 -SkipDotNet
 
- static string server= "https://geo.iproyal.com:12321";
-    static string username= "kx25pY99mFbmORvY";
-    static string password= "MhTTC3Ajh8bHkk8B_country-il";
+# Force overwrite existing installation
+.\install-windows.ps1 -Force
+Linux:
+bash
+# Basic installation
+./install-linux.sh
+
+# Skip .NET installation
+./install-linux.sh --skip-dotnet
+
+# Custom installation directory
+./install-linux.sh --install-dir /path/to/custom/dir
